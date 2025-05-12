@@ -33,12 +33,18 @@ router.post('/addTask', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to add task' });
   }
 });
-
-// 📋 Fetch All Tasks
+// fetch
 router.get('/fetchAllTasks', async (_req: Request, res: Response) => {
   try {
-    const cachedTasks = await redisClient.get(redisKey);
-    const redisTasks = cachedTasks ? JSON.parse(cachedTasks) : [];
+    let redisTasks = [];
+
+    try {
+      const cachedTasks = await redisClient.get(redisKey);
+      redisTasks = cachedTasks ? JSON.parse(cachedTasks) : [];
+    } catch (redisErr) {
+      console.error('⚠️ Redis read or parse failed:', redisErr.message);
+      redisTasks = []; // fallback to empty
+    }
 
     const mongoTasks = await Task.find();
 
@@ -47,10 +53,11 @@ router.get('/fetchAllTasks', async (_req: Request, res: Response) => {
       fromMongoDB: mongoTasks
     });
   } catch (err) {
-    console.error(err);
+    console.error('❌ fetchAllTasks Error:', err.message);
     res.status(500).json({ error: 'Failed to fetch tasks' });
   }
 });
+
 
 
 
