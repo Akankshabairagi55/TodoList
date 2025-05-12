@@ -11,7 +11,7 @@ function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const addTask = async (title: string) => {
-    const response = await fetch('http://localhost:5000/addTask', {
+    const response = await fetch('https://todolist-1-s1q7.onrender.com/addTask', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ function App() {
   };
 
   const fetchTasks = async () => {
-    const res = await fetch('http://localhost:5000/fetchAllTasks');
+    const res = await fetch('https://todolist-1-s1q7.onrender.com/fetchAllTasks');
     const data = await res.json();
   
     const allTasks = [
@@ -42,11 +42,12 @@ function App() {
       ...data.fromMongoDB,
     ];
   
-    const converted: Task[] = allTasks.map((task: any, index: number) => ({
-      id: crypto.randomUUID(), // random ID for frontend display
+    const converted: Task[] = allTasks.map((task: any) => ({
+      id: crypto.randomUUID(),
       title: task.title,
       createdAt: new Date(task.createdAt),
     }));
+    
   
     setTasks(converted.reverse());
   };
