@@ -1,17 +1,21 @@
 import { useState } from 'react';
+import mqtt from 'mqtt';
+const client = mqtt.connect('ws://broker.hivemq.com:8000/mqtt');
 
-interface Props {
-  onAddTask: (title: string) => void;
-}
 
-const TaskInput = ({ onAddTask }: Props) => {
+const TaskInput = () => {
   const [task, setTask] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (task.trim()) {
-      onAddTask(task);
-      setTask('');
+     
+    
+      client.publish('add/task', JSON.stringify({
+        task: task,
+        date: Date.now().toString()
+      }));
+      setTask("")
     }
   };
 

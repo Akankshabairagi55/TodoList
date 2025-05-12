@@ -7,36 +7,15 @@ import TaskList from './Components/TaskList';
 import type { Task } from './types';
 import './index.css'
 
+
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const addTask = async (title: string) => {
-    const response = await fetch('https://todolist-1-s1q7.onrender.com/addTask', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title }),
-    });
-  
-    const data = await response.json();
-  
-    if (response.ok) {
-      const newTask: Task = {
-        id: crypto.randomUUID(), // frontend ID
-        title: data.task.title,
-        createdAt: new Date(),   // or from backend if available
-      };
-      setTasks(prev => [newTask, ...prev]);
-    } else {
-      alert('❌ Failed to add task: ' + data.error);
-    }
-  };
 
   const fetchTasks = async () => {
-    const res = await fetch('https://todolist-1-s1q7.onrender.com/fetchAllTasks');
+    const res = await fetch('https://todolist-1-wger.onrender.com/fetchAllTasks');
     const data = await res.json();
-  
+  console.log(data)
     const allTasks = [
       ...data.fromRedis,
       ...data.fromMongoDB,
@@ -67,7 +46,7 @@ function App() {
         style={{padding:'20px'}}
       >
         <Header />
-        <TaskInput onAddTask={addTask} />
+        <TaskInput/>
         <TaskList tasks={tasks} />
       </motion.div>
     </div>
