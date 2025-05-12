@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import mqtt from 'mqtt';
-const client = mqtt.connect('ws://broker.hivemq.com:8000/mqtt');
+const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
 
 
 const TaskInput = () => {
