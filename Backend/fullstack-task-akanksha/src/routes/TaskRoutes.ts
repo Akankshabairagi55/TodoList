@@ -19,16 +19,20 @@ router.post('/addTask', async (req: Request, res: Response) => {
     taskList.push(newTask);
 
     if (taskList.length > 50) {
-      await Task.insertMany(taskList);
-      await redisClient.del(redisKey);
-      console.log('🎯 Moved tasks to MongoDB and cleared Redis cache');
+      try {
+        await Task.insertMany(taskList);
+        await redisClient.del(redisKey);
+        console.log('🎯 Moved tasks to MongoDB and cleared Redis cache');
+      } catch (insertError) {
+        console.error('❌ Error inserting tasks into MongoDB:', insertError);
+      }
     } else {
       await redisClient.set(redisKey, JSON.stringify(taskList));
       console.log('🧠 Task stored in Redis');
     }
 
     res.status(201).json({ message: 'Task processed!', task: newTask });
-  } catch (err) {
+  } catch (err:any) {
     console.error(err);
     res.status(500).json({ error: 'Failed to add task' });
   }
@@ -41,8 +45,8 @@ router.get('/fetchAllTasks', async (_req: Request, res: Response) => {
     try {
       const cachedTasks = await redisClient.get(redisKey);
       redisTasks = cachedTasks ? JSON.parse(cachedTasks) : [];
-    } catch (redisErr) {
-      console.error('⚠️ Redis read or parse failed:', redisErr.message);
+    } catch (err:any) {
+      console.error('⚠️ Redis read or parse failed:', err.message);
       redisTasks = []; // fallback to empty
     }
 
@@ -52,7 +56,7 @@ router.get('/fetchAllTasks', async (_req: Request, res: Response) => {
       fromRedis: redisTasks,
       fromMongoDB: mongoTasks
     });
-  } catch (err) {
+  } catch (err:any) {
     console.error('❌ fetchAllTasks Error:', err.message);
     res.status(500).json({ error: 'Failed to fetch tasks' });
   }
