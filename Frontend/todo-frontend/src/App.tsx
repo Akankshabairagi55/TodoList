@@ -13,7 +13,7 @@ function App() {
 
 
   const fetchTasks = async () => {
-    const res = await fetch('https://todolist-1-wger.onrender.com/fetchAllTasks');
+    const res = await fetch('https://todolist-004.onrender.com/fetchAllTasks');
     const data = await res.json();
   console.log(data)
     const allTasks = [
